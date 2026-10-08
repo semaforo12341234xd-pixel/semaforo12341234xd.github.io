@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧬 ELECTROFORESIS CAPILAR EN GEL</title>
+<style>
+*{box-sizing:border-box;margin:0}
+body{font-family:'Trebuchet MS',Segoe UI,sans-serif;color:#e8fbff;background:radial-gradient(circle at 20% 10%,#12406b,#071426 60%,#050b17);min-height:100vh;overflow-x:hidden}
+[hidden]{display:none!important}
+#bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+#bg span{position:absolute;opacity:.15;animation:fl linear infinite}
+@keyframes fl{from{transform:translateY(105vh) rotate(0)}to{transform:translateY(-15vh) rotate(360deg)}}
+.scr{display:none;position:relative;z-index:1;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;gap:12px}
+.scr.on{display:flex;animation:fi .6s ease}
+@keyframes fi{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+h1{font-size:clamp(1.6rem,5.5vw,3.4rem);text-shadow:0 0 20px #00e5ff,0 0 40px #00e5ff88;letter-spacing:1px}
+.sub{color:#9fe8ff}.by{color:#ffd166;font-weight:bold}
+.btn{border:0;border-radius:40px;padding:12px 24px;font:bold 1rem inherit;font-family:inherit;color:#04202e;background:linear-gradient(135deg,#00e5ff,#3ddc97);cursor:pointer;box-shadow:0 4px 18px #00e5ff55;transition:.2s}
+.btn:hover:not(:disabled){transform:translateY(-3px) scale(1.04)}
+.btn.big{font-size:1.4rem;padding:16px 40px}.btn.alt{background:linear-gradient(135deg,#ffd166,#ff9f43)}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn.on{outline:4px solid #fff}
+.card{background:#0a2238dd;border:1px solid #00e5ff66;border-radius:18px;padding:16px;box-shadow:0 0 30px #00e5ff22;backdrop-filter:blur(6px);width:100%;max-width:520px}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.chars{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}.chars svg{width:70px;height:70px}
+.bac{animation:wob 1.6s ease-in-out infinite;filter:drop-shadow(0 3px 4px #0008)}
+.bac:nth-child(2n){animation-delay:.4s}
+@keyframes wob{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}
+.gel{display:flex;gap:8px;background:#1b6a5a88;border:2px solid #3ddc9788;border-radius:10px;padding:6px;height:120px;overflow:hidden;width:min(320px,90vw);box-shadow:0 0 25px #3ddc9755}
+.gel div{flex:1;position:relative}
+.gel i{position:absolute;left:0;right:0;height:6px;border-radius:3px;background:#00e5ff;box-shadow:0 0 8px #00e5ff;animation:mig 4s ease-in infinite}
+.gel div:nth-child(2n) i{background:#ff6fb5;box-shadow:0 0 8px #ff6fb5}
+@keyframes mig{from{top:-8px;opacity:1}to{top:100%;opacity:.2}}
+.nm{display:flex;align-items:center;gap:8px;margin:6px 0;animation:fi .4s}
+.nm svg{width:44px;height:44px;flex:none}
+.nm input{flex:1;padding:10px;border-radius:10px;border:2px solid #00e5ff88;background:#06131f;color:#fff;font-size:1rem}
+.nm small{display:block;text-align:left;color:#9fe8ff}
+/* modal */
+.modal{position:fixed;inset:0;background:#000b;z-index:50;display:flex;align-items:center;justify-content:center;padding:14px;animation:fi .3s}
+.modal .card{max-height:90vh;overflow:auto;text-align:left}
+.modal li{margin:6px 0 6px 18px}
+/* game */
+#game{justify-content:flex-start;gap:8px}
+#game header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+#game h2{font-size:clamp(1rem,3vw,1.6rem);text-shadow:0 0 12px #00e5ff}
+.pill{background:#0a2238;border:1px solid #00e5ff88;border-radius:20px;padding:5px 12px;font-weight:bold}
+#turn{color:#ffd166}
+main{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:flex-start;width:100%}
+#bw{position:relative;width:min(96vw,calc(100vh - 110px),660px);aspect-ratio:1;border:3px solid #00e5ff;border-radius:12px;overflow:hidden;box-shadow:0 0 30px #00e5ff55}
+#board,#ov,#toks{position:absolute;inset:0;width:100%;height:100%}
+#board{display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr)}
+.c{position:relative;border:1px solid #ffffff18;font-size:clamp(.45rem,1.6vw,.8rem);padding:1px 3px;text-align:left;overflow:hidden}
+.c:nth-child(2n){background:#0e4f6e}.c:nth-child(2n+1){background:#0a3a58}
+.c.a{background:#126a62}.c b{position:relative;z-index:1;text-shadow:0 0 3px #000}
+.c u{position:absolute;right:2px;bottom:0;text-decoration:none;opacity:.35;font-size:clamp(.6rem,2.4vw,1.2rem)}
+.c.f{background:#8a6d00;animation:pu 1.5s infinite}
+@keyframes pu{50%{filter:brightness(1.5)}}
+#ov{pointer-events:none}
+.sn1{stroke-dasharray:3 1.6;animation:da 1.5s linear infinite}
+@keyframes da{to{stroke-dashoffset:-9}}
+.ld{filter:drop-shadow(0 0 1px #7df9ff);animation:gl 2s ease-in-out infinite}
+@keyframes gl{50%{opacity:.6}}
+.tok{position:absolute;width:6.4%;height:6.4%;transform:translate(-50%,-50%);transition:left .28s,top .28s;z-index:3}
+.tok.slow{transition:left 1.1s ease-in-out,top 1.1s ease-in-out}
+.tok svg{width:100%;height:100%}
+.tok.act{z-index:4;filter:drop-shadow(0 0 5px #fff)}
+aside{flex:1 1 320px;max-width:480px;display:flex;flex-direction:column;gap:10px}
+#score{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sc{display:flex;align-items:center;gap:6px;background:#0a2238;border:2px solid transparent;border-radius:12px;padding:4px 8px;font-size:.85rem;text-align:left}
+.sc svg{width:34px;height:34px;flex:none}.sc.act{border-color:#ffd166;box-shadow:0 0 14px #ffd16688}
+#qc{max-width:none;text-align:left}
+#timer{position:relative;height:22px;background:#06131f;border-radius:11px;overflow:hidden;margin-bottom:10px}
+#bar{height:100%;width:100%;background:linear-gradient(90deg,#3ddc97,#ffd166,#ff4d6d);transition:width .1s linear}
+#tt{position:absolute;inset:0;text-align:center;font-weight:bold;font-size:.85rem;line-height:22px}
+#qt{font-weight:bold;font-size:1.05rem;margin-bottom:10px;animation:fi .4s}
+.op{display:block;width:100%;text-align:left;margin:5px 0;padding:10px 12px;border-radius:12px;border:2px solid #00e5ff66;background:#0b3050;color:#fff;font:inherit;cursor:pointer;transition:.15s}
+.op:hover:not(:disabled){background:#12517d;transform:translateX(4px)}
+.op:disabled{cursor:default}.op.ok{background:#16a34a;border-color:#7dffa8;animation:pop .5s}.op.no{background:#7f1d2d;border-color:#ff4d6d;opacity:.6;animation:shk .4s}
+@keyframes pop{50%{transform:scale(1.04)}}@keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#who{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:.85rem}
+.ch{border:2px solid #00e5ff88;background:#06131f;color:#fff;border-radius:16px;padding:4px 10px;cursor:pointer;font:inherit}
+.ch.s{background:#00e5ff;color:#04202e;font-weight:bold}.ch:disabled{opacity:.3;text-decoration:line-through}
+#msg{margin-top:8px;padding:8px;border-radius:10px;background:#06131f;min-height:20px;font-size:.92rem;animation:fi .3s}
+.dicebox{display:flex;align-items:center;gap:14px;justify-content:center}
+#dice{font-size:3.4rem;width:76px;height:76px;line-height:76px;text-align:center;background:#fff;color:#102;border-radius:14px;box-shadow:0 0 14px #fff8}
+#dice.sp{animation:sp .15s linear infinite}@keyframes sp{to{transform:rotate(90deg) scale(1.1)}}
+#fact{background:#3b2a6b;border:1px solid #b69cff;border-radius:12px;padding:8px 12px;font-size:.88rem}
+#toast{position:fixed;left:50%;top:18%;transform:translate(-50%,-30px);z-index:60;padding:16px 26px;border-radius:18px;text-align:center;opacity:0;pointer-events:none;transition:.35s;max-width:92vw;font-weight:bold;box-shadow:0 0 40px #000a}
+#toast.show{opacity:1;transform:translate(-50%,0)}#toast h3{font-size:1.4rem}
+#toast.good{background:#0f7a4d;border:2px solid #7dffa8}#toast.bad{background:#8a1f35;border:2px solid #ff8fa3}#toast.info{background:#0b4f7a;border:2px solid #00e5ff}
+#vic{position:fixed;inset:0;z-index:70;background:radial-gradient(circle,#0b3a66ee,#050b17f5);display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;animation:fi .7s}
+#vic .in{position:relative;z-index:2;display:flex;flex-direction:column;gap:10px;align-items:center}
+#vic h1{color:#ffd166;animation:pop 1.2s infinite}#vic svg{width:110px;height:110px}
+#cv{position:absolute;inset:0;z-index:1;width:100%;height:100%}
+@media(max-width:600px){#score{grid-template-columns:1fr 1fr}.btn.big{padding:14px 26px}}
+</style></head><body>
+<div id="bg"></div>
+
+<section id="start" class="scr on">
+ <div class="chars" id="sc0"></div>
+ <h1>🧬 ELECTROFORESIS CAPILAR EN GEL</h1>
+ <p class="sub">🔬 Serpientes y Escaleras bioquímico · ⚡ ¡Responde, lanza y migra hasta la meta!</p>
+ <div class="gel"><div><i></i><i style="animation-delay:1.4s"></i></div><div><i style="animation-delay:.5s"></i><i style="animation-delay:2.2s"></i></div><div><i style="animation-delay:1s"></i><i style="animation-delay:3s"></i></div><div><i style="animation-delay:2s"></i><i style="animation-delay:.2s"></i></div><div><i style="animation-delay:.8s"></i></div></div>
+ <p class="by">Hecho por Angelina Nicol Peña Torrico</p>
+ <button class="btn big" onclick="show('setup')">🎮 JUGAR</button>
+ <button class="btn alt" onclick="$('#how').hidden=false">📚 ¿CÓMO JUGAR?</button>
+</section>
+
+<section id="setup" class="scr">
+ <div class="card">
+  <h2>👥 ¿Cuántos jugadores?</h2>
+  <div class="row"><button class="btn cnt" data-n="2">👥 2 JUGADORES</button><button class="btn cnt" data-n="3">👥 3 JUGADORES</button><button class="btn cnt" data-n="4">👥 4 JUGADORES</button></div>
+  <div id="names"></div>
+  <div class="row"><button class="btn alt" onclick="show('start')">⬅️ Volver</button><button class="btn big" onclick="startGame()">🧪 COMENZAR</button></div>
+ </div>
+</section>
+
+<section id="game" class="scr">
+ <header><h2>🧬 ELECTROFORESIS CAPILAR EN GEL</h2><span class="pill">🎯 META: 100</span><span class="pill" id="turn"></span></header>
+ <main>
+  <div id="bw"><div id="board"></div><svg id="ov" viewBox="0 0 100 100"></svg><div id="toks"></div></div>
+  <aside>
+   <div id="score"></div>
+   <div class="card" id="qc">
+    <div id="timer"><div id="bar"></div><span id="tt"></span></div>
+    <div id="qt"></div><div id="opts"></div>
+    <div id="who"></div><div id="msg"></div>
+    <div class="row"><button class="btn" id="next" hidden onclick="cont()">Continuar ➡️</button></div>
+   </div>
+   <div class="dicebox"><div id="dice">🎲</div><button class="btn big" id="roll" disabled onclick="roll()">🎲 LANZAR DADO</button></div>
+   <div id="fact" hidden></div>
+  </aside>
+ </main>
+</section>
+
+<div class="modal" id="how" hidden><div class="card">
+ <h2>📚 ¿Cómo jugar?</h2>
+ <ul>
+  <li>🎯 Llega <b>exactamente</b> a la casilla <b>100</b> (si te pasas, te quedas donde estás).</li>
+  <li>❓ <b>Nadie lanza el dado sin responder</b> antes una pregunta de electroforesis.</li>
+  <li>⏱️ Hay 15 segundos. Elige quién responde (los botones "¿Quién responde?") y pulsa A, B, C o D.</li>
+  <li>✅ Quien responda bien, ¡aunque no sea su turno!, gana el derecho de lanzar el dado.</li>
+  <li>❌ Quien falle queda bloqueado en esa pregunta; los demás pueden intentarlo. Si todos fallan, la pregunta termina.</li>
+  <li>🧬 Escaleras (ADN/capilares): subes. ⚠️ Serpientes moleculares: bajas.</li>
+  <li>🏆 Gana la primera bacteria en llegar a la meta.</li>
+ </ul>
+ <div class="row"><button class="btn" onclick="$('#how').hidden=true">¡Entendido!</button></div>
+</div></div>
+
+<div id="toast"></div>
+<div id="vic" hidden><canvas id="cv"></canvas><div class="in">
+ <div id="vsv"></div><h1>🎉 ¡FELICIDADES! ¡ERES UN BUEN BIOQUÍMICO! 🎉</h1>
+ <h2 id="vn"></h2><p>Has completado el recorrido de electroforesis.</p>
+ <p class="by">Hecho por Angelina Nicol Peña Torrico</p>
+ <button class="btn big" onclick="again()">🔄 JUGAR DE NUEVO</button>
+</div></div>
+
+<script>
+const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function show(id){document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id==id))}
+const C=[{n:'Bacilo',c:'#3ddc97',t:'Valiente'},{n:'Coco',c:'#ff6fb5',t:'Alegre'},{n:'Espirilo',c:'#ffb938',t:'Travieso'},{n:'Vibrio',c:'#6aa8ff',t:'Curioso'}];
+const F=[[24,28,36,28,3,'M25 34Q30 39 35 34'],[23,27,37,27,4.5,'M26 35a4 4 0 0 0 8 0z'],[25,30,35,26,3,'M26 35Q31 38 36 33'],[24,26,36,26,3.5,'M26 33h8']];
+function bact(i){const c=C[i].c,f=F[i];const B=[
+`<rect x="10" y="17" width="40" height="26" rx="13" fill="${c}"/><path d="M10 30H4M50 30h6M30 17v-5M30 43v5" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`,
+`<circle cx="30" cy="30" r="21" fill="${c}"/><circle cx="18" cy="41" r="3" fill="#fff5"/><circle cx="43" cy="19" r="3" fill="#fff5"/><circle cx="43" cy="42" r="2" fill="#fff5"/>`,
+`<path d="M7 38Q17 12 30 30T53 22" fill="none" stroke="${c}" stroke-width="17" stroke-linecap="round"/>`,
+`<path d="M10 42Q30 4 50 42" fill="none" stroke="${c}" stroke-width="17" stroke-linecap="round"/><path d="M50 42l6 7" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`][i];
+return `<svg viewBox="0 0 60 60" class="bac">${B}<circle cx="${f[0]}" cy="${f[1]}" r="${f[4]}" fill="#fff"/><circle cx="${f[2]}" cy="${f[3]}" r="${f[4]}" fill="#fff"/><circle cx="${f[0]}" cy="${f[1]}" r="${f[4]/2}" fill="#111"/><circle cx="${f[2]}" cy="${f[3]}" r="${f[4]/2}" fill="#111"/><path d="${f[5]}" fill="${i==1?'#7a1030':'none'}" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></svg>`}
+// fondo
+(()=>{const b=$('#bg');'🧬🦠🔬⚗️🧪🧫⚡'.match(/./gu).forEach((e,k)=>{for(let j=0;j<3;j++){const s=document.createElement('span');s.textContent=e;s.style.cssText=`left:${Math.random()*95}vw;font-size:${20+Math.random()*34}px;animation-duration:${14+Math.random()*16}s;animation-delay:-${Math.random()*20}s`;b.appendChild(s)}});
+$('#sc0').innerHTML=C.map((_,i)=>bact(i)).join('')})();
+
+// ===== PREGUNTAS: pregunta|correcta|mala1|mala2|mala3|explicación =====
+const QS=`¿Qué es la electroforesis?|Migración de moléculas cargadas bajo un campo eléctrico|Separación por punto de ebullición|Centrifugación de células|Fusión de proteínas|La electroforesis separa moléculas cargadas según su movilidad en un campo eléctrico.
+¿Hacia qué electrodo migra el ADN?|Hacia el ánodo (+)|Hacia el cátodo (−)|No migra|Hacia ambos por igual|El ADN tiene carga negativa por sus grupos fosfato, por eso migra hacia el polo positivo.
+¿Qué le da carga negativa al ADN?|Los grupos fosfato|Las bases nitrogenadas|Los puentes de hidrógeno|La desoxirribosa|Cada nucleótido aporta un fosfato ionizado, con carga negativa.
+¿Qué gel se usa comúnmente para separar fragmentos grandes de ADN?|Agarosa|Poliacrilamida|Gelatina comercial|Agar nutritivo|La agarosa forma poros grandes, ideal para fragmentos de ADN de cientos a miles de pb.
+¿Qué gel ofrece mayor resolución para proteínas y ADN muy pequeño?|Poliacrilamida|Agarosa al 0,5%|Agua con sal|Almidón soluble|La poliacrilamida forma poros pequeños y controlables.
+Si aumenta la concentración del gel, el tamaño de poro...|Disminuye|Aumenta|No cambia|Se vuelve negativo|Más gel significa una red más densa y poros más pequeños.
+En un gel, los fragmentos de ADN más pequeños migran...|Más rápido|Más lento|Hacia el cátodo|No migran|Los fragmentos pequeños atraviesan los poros con menos fricción.
+¿Qué es una banda en un gel?|Zona donde se concentran moléculas del mismo tamaño|Una grieta del gel|Un cable del equipo|Una burbuja del buffer|Las moléculas iguales migran juntas y forman una banda visible.
+¿Para qué sirve un marcador de peso molecular?|Estimar el tamaño de las muestras|Aumentar el voltaje|Teñir el gel|Disolver el ADN|Contiene fragmentos de tamaño conocido para comparar.
+¿Qué es un capilar en electroforesis capilar?|Un tubo muy delgado lleno de buffer o gel|Una cámara de gel horizontal|Un electrodo de platino|Una pipeta gruesa de vidrio|Suele medir 25–100 µm de diámetro interno.
+¿Qué es el flujo electroosmótico (EOF)?|Movimiento del líquido en el capilar por la carga de su pared|Evaporación del buffer|Paso de electrones por el cable|Difusión del ADN|La pared de sílice cargada arrastra la solución al aplicar voltaje.
+En un capilar de sílice a pH alto, los grupos silanol...|Se ionizan (SiO⁻) y generan EOF|Se vuelven neutros|Se disuelven|Emiten luz|La pared negativa atrae cationes que arrastran el líquido hacia el cátodo.
+El EOF en un capilar de sílice normalmente se dirige hacia...|El cátodo (−)|El ánodo (+)|Arriba|Ninguna dirección|Los cationes hidratados de la capa difusa se mueven hacia el cátodo.
+La movilidad electroforética depende principalmente de...|La relación carga/tamaño|El color de la muestra|La marca del equipo|La hora del día|Más carga y menor tamaño dan mayor movilidad.
+¿Qué detector es común en electroforesis capilar?|UV-Vis o fluorescencia|Termómetro|Balanza|Regla|La ventana del capilar permite detectar absorbancia o fluorescencia.
+¿Ventaja de la electroforesis capilar frente al gel plano?|Alta resolución, rapidez y poca muestra|Requiere litros de muestra|No usa voltaje|Es totalmente manual|Se necesitan solo nanolitros y se automatiza fácilmente.
+¿Qué función tiene el campo eléctrico?|Impulsar la migración de moléculas cargadas|Fundir el gel|Teñir las bandas|Esterilizar la muestra|La fuerza eléctrica mueve las moléculas según su carga.
+Un voltaje excesivamente alto puede...|Calentar el gel y distorsionar las bandas|Detener la migración|Volver positivo al ADN|Aumentar el tamaño de poro|El efecto Joule calienta y causa bandas difusas o gel dañado.
+¿Qué es el efecto Joule?|Calentamiento por el paso de corriente|Enfriamiento del buffer|Emisión de luz|Magnetización del gel|La corriente en el buffer produce calor.
+¿Por qué el capilar tolera voltajes altos?|Disipa bien el calor por su gran relación superficie/volumen|No circula corriente|Usa gel congelado|No usa buffer|Su diámetro mínimo evacúa el calor rápidamente.
+¿Qué es el SDS en SDS-PAGE?|Detergente que da carga negativa uniforme a las proteínas|Un colorante|Una enzima|Un marcador de ADN|El SDS desnaturaliza y enmascara la carga intrínseca.
+SDS-PAGE separa las proteínas principalmente por...|Masa molecular|Color|Solubilidad|Punto de fusión|Con carga uniforme, solo el tamaño determina la migración.
+PAGE significa...|Electroforesis en gel de poliacrilamida|Proteína Analizada en Gel Extra|Prueba de Análisis Genético|Placa de Agarosa Estándar|Es la sigla inglesa de PolyAcrylamide Gel Electrophoresis.
+¿Para qué se añade β-mercaptoetanol en SDS-PAGE?|Para romper puentes disulfuro|Para teñir|Para polimerizar el gel|Para subir el pH|Reduce los disulfuros y desdobla completamente la proteína.
+¿Qué hace el bromuro de etidio?|Se intercala en el ADN y fluoresce con UV|Corta el ADN|Tiñe proteínas de azul|Actúa como buffer|Permite visualizar bandas de ADN bajo luz UV.
+¿Qué tinción es común para proteínas en gel?|Azul de Coomassie|Bromuro de etidio|Lugol|Tinción de Gram|El Coomassie se une a las proteínas y las tiñe de azul.
+¿Qué función cumple el buffer de electroforesis?|Mantener el pH y conducir la corriente|Aportar el ADN|Polimerizar el gel|Teñir la muestra|Sin buffer iónico no hay conducción estable.
+¿Qué buffers se usan comúnmente para ADN en agarosa?|TAE o TBE|Agua destilada|Etanol|HCl puro|Tris-acetato-EDTA o Tris-borato-EDTA.
+¿El pH afecta la carga de las proteínas?|Sí, cambia su ionización|No|Solo la del ADN|Solo su color|Los grupos ácidos y básicos ganan o pierden protones según el pH.
+¿Qué es el punto isoeléctrico (pI)?|pH en que la carga neta es cero|pH igual a 14|El voltaje máximo|El tamaño mínimo|A su pI una proteína no migra en un campo eléctrico.
+El isoelectroenfoque separa proteínas por...|Su pI|Su tamaño|Su color|Su densidad|Las proteínas migran en un gradiente de pH hasta su pI.
+Para resolver fragmentos pequeños de ADN conviene un gel de agarosa...|Más concentrado (2%)|Muy diluido (0,3%)|Sin agarosa|Sin buffer|Más agarosa da poros más pequeños.
+Para separar fragmentos muy grandes de ADN conviene agarosa...|Poco concentrada (0,7%)|Muy concentrada (4%)|Poliacrilamida 20%|Sin voltaje|Los poros grandes dejan pasar fragmentos enormes.
+Al aumentar la temperatura durante la corrida...|Baja la viscosidad y sube la movilidad|La migración se detiene|El ADN se vuelve positivo|El gel se hace más rígido|Más temperatura implica migración más rápida, pero menos controlada.
+¿Qué es el tiempo de migración en electroforesis capilar?|El tiempo que tarda un analito en llegar al detector|La duración de la tinción|El tiempo de gelificación|La vida útil del capilar|Es característico de cada analito en condiciones definidas.
+¿Qué es un pocillo?|Hueco del gel donde se carga la muestra|Un electrodo|Un colorante|Un detector|Se forma con un peine al gelificar el gel.
+¿Para qué sirve el colorante del tampón de carga?|Seguir visualmente el avance de la corrida|Cortar el ADN|Fluorescer el ADN|Reemplazar el buffer|El azul de bromofenol migra junto con el frente.
+¿Para qué se añade glicerol o sacarosa a la muestra?|Aumentar la densidad para que caiga al pocillo|Teñir|Degradar proteínas|Cambiar la carga|La muestra más densa se hunde en el pocillo.
+¿Para qué se usa la electroforesis tras una PCR?|Verificar el tamaño del producto amplificado|Reemplazar la PCR|Medir el pH|Esterilizar|Se compara la banda del amplicón con el marcador.
+¿Qué aplicación forense usa electroforesis capilar?|Análisis de STR para huella genética|Cultivo de hongos|Medición de glucosa|Análisis de rocas|Los STR se separan por tamaño con alta resolución.
+La secuenciación de Sanger se lee comúnmente mediante...|Electroforesis capilar|Microscopía óptica|Cromatografía de gases|Titulación|Los fragmentos marcados se separan por tamaño en capilares.
+¿Para qué sirve la electroforesis de proteínas séricas?|Detectar alteraciones como gammapatías|Medir glucosa|Contar bacterias|Medir fiebre|Separa albúmina y globulinas para el diagnóstico.
+La electroforesis de hemoglobina permite detectar...|Variantes como la hemoglobina S|Plaquetas bajas|Infecciones virales|Niveles de sodio|Las variantes de hemoglobina migran distinto según su carga.
+¿Por qué un ADN lineal grande migra más lento?|Mayor fricción con los poros del gel|Tiene carga positiva|Es más ligero|No tiene fosfatos|El tamaño aumenta la resistencia al avanzar por la malla.
+Un plásmido superenrollado frente a uno relajado del mismo tamaño migra...|Más rápido (más compacto)|Más lento|Igual|Hacia el cátodo|Su forma compacta atraviesa mejor los poros.
+Al aumentar el voltaje, la velocidad de migración...|Aumenta|Disminuye|Siempre es cero|Cambia de signo|La velocidad es proporcional al campo eléctrico (v = μE).
+¿Qué separa la electroforesis capilar de zona (CZE)?|Analitos según su relación carga/tamaño en buffer libre|Solo por tamaño en gel|Solo por polaridad|Solo por color|En CZE no hay tamiz, la separación depende de la movilidad.
+¿Qué es la electroforesis capilar en gel (CGE)?|Capilar relleno de una matriz polimérica que actúa como tamiz|Capilar vacío|Gel horizontal gigante|Capilar sin voltaje|La matriz separa moléculas por tamaño, como un gel convencional.
+¿Qué es la inyección electrocinética?|Introducir muestra aplicando voltaje breve|Verter con embudo|Congelar la muestra|Centrifugar el capilar|La muestra entra al capilar por migración y EOF.
+¿Qué es un electroferograma?|Gráfico de señal vs. tiempo de migración|Foto del gel teñido|Un tipo de buffer|Un electrodo|Cada pico corresponde a un analito detectado.
+En SDS-PAGE las proteínas más pequeñas migran...|Más rápido y más lejos|Más lento|Hacia el cátodo|No migran|Atraviesan mejor los poros del gel.
+Un marcador de ADN de 100 pb contiene...|Fragmentos de tamaños conocidos|Fragmentos aleatorios|Solo proteínas|Solo colorante|Los múltiplos de 100 pb sirven de regla molecular.
+Si se invierten los electrodos, el ADN...|Migra en sentido contrario, saliendo del gel|Migra igual|Se vuelve positivo|Se disuelve|El ADN sigue yendo al polo positivo, que ahora está del lado del pocillo.
+¿Unidad habitual para el tamaño de fragmentos de ADN?|Pares de bases (pb)|Kilodaltons|Molar|Pascales|Se usan pb o kb.
+¿Unidad habitual para la masa de proteínas?|Kilodaltons (kDa)|Pares de bases|Voltios|Litros|1 kDa equivale a 1000 unidades de masa atómica.
+El Western blot transfiere...|Proteínas del gel a una membrana|ADN a una membrana|ARN al capilar|Bacterias al gel|Luego se detectan con anticuerpos.
+El Southern blot detecta...|ADN específico|Proteínas|Lípidos|Azúcares|Transfiere ADN del gel a una membrana e hibrida con una sonda.`.split('\n').map(l=>{const a=l.split('|');return{q:a[0],c:a[1],w:[a[2],a[3],a[4]],e:a[5]}});
+const FACTS=['La electroforesis capilar puede analizar volúmenes de apenas nanolitros.','El ADN migra al ánodo (+) porque es una molécula con carga negativa.','Arne Tiselius ganó el Nobel de Química en 1948 por sus trabajos en electroforesis.','El Proyecto Genoma Humano usó secuenciadores de electroforesis capilar.','La ley del campo: velocidad = movilidad × campo eléctrico.','El bromuro de etidio se está reemplazando por tinciones más seguras.','Los capilares miden menos que un cabello humano de diámetro.','La agarosa se extrae de algas marinas rojas.'];
+
+// ===== TABLERO =====
+const SN={97:78,92:73,88:67,62:19,56:37,48:26,36:6,32:10},LD={4:25,9:31,21:42,28:84,51:72,71:91,80:99};
+const DEC=['🧬','🧪','⚡','🔬','🧫','🦠','⚗️'];
+function pt(n){n=Math.max(n,1);const r=Math.floor((n-1)/10),c=r%2?9-(n-1)%10:(n-1)%10;return[c*10+5,(9-r)*10+5]}
+function wave(a,b,amp,wl,ph){const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,N=Math.ceil(L/1.2),p=[];for(let k=0;k<=N;k++){const t=k/N,o=amp*Math.sin(t*L/wl*6.283+ph)*Math.min(1,t*6,(1-t)*6+.3);p.push([a[0]+dx*t-uy*o,a[1]+dy*t+ux*o])}return p}
+const D=p=>p.map((q,k)=>(k?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join('');
+function buildBoard(){let h='';for(let row=0;row<10;row++){const r=9-row;for(let col=0;col<10;col++){const n=r*10+(r%2?10-col:col+1);h+=`<div class="c${LD[n]?' a':''}${n==100?' f':''}"><b>${n}</b><u>${n==100?'🏁':DEC[n%7]}</u></div>`}}$('#board').innerHTML=h;
+let s='<defs></defs>';
+for(const f in LD){const a=pt(+f),b=pt(LD[f]),dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;let g='';
+[-1.4,1.4].forEach(o=>g+=`<line x1="${a[0]-uy*o}" y1="${a[1]+ux*o}" x2="${b[0]-uy*o}" y2="${b[1]+ux*o}" stroke="#7df9ff" stroke-width=".8" stroke-linecap="round"/>`);
+for(let d=2.5;d<L-1;d+=3.2){const x=a[0]+ux*d,y=a[1]+uy*d;g+=`<line x1="${x+uy*1.4}" y1="${y-ux*1.4}" x2="${x-uy*1.4}" y2="${y+ux*1.4}" stroke="#fff" stroke-width=".5" opacity=".85"/><circle cx="${x+uy*1.4}" cy="${y-ux*1.4}" r=".6" fill="#ff6fb5"/><circle cx="${x-uy*1.4}" cy="${y+ux*1.4}" r=".6" fill="#ffd166"/>`}
+s+=`<g class="ld">${g}</g>`}
+for(const f in SN){const a=pt(+f),b=pt(SN[f]),s1=wave(a,b,2.2,10,0),s2=wave(a,b,2.2,10,Math.PI);let g='';
+for(let k=2;k<s1.length;k+=3)g+=`<line x1="${s1[k][0]}" y1="${s1[k][1]}" x2="${s2[k][0]}" y2="${s2[k][1]}" stroke="#fff" stroke-width=".4" opacity=".6"/>`;
+s+=`<g>${g}<path d="${D(s1)}" fill="none" stroke="#ff4d6d" stroke-width="1.2" stroke-linecap="round"/><path class="sn1" d="${D(s2)}" fill="none" stroke="#ffd166" stroke-width="1.2"/><circle cx="${a[0]}" cy="${a[1]}" r="2.6" fill="#ff4d6d" stroke="#fff" stroke-width=".4"/><circle cx="${a[0]-.9}" cy="${a[1]-.6}" r=".6" fill="#fff"/><circle cx="${a[0]+.9}" cy="${a[1]-.6}" r=".6" fill="#fff"/><circle cx="${b[0]}" cy="${b[1]}" r="1" fill="#ffd166"/></g>`}
+$('#ov').innerHTML=s}
+
+// ===== JUEGO =====
+let N=2,P=[],cur=0,deck=[],Q=null,blocked=new Set(),timer=null,tl=0,phase='',roller=0,sel=0,cf=false;
+function setCount(n){N=n;document.querySelectorAll('.cnt').forEach(b=>b.classList.toggle('on',b.dataset.n==n));const old=[...document.querySelectorAll('.nm input')].map(i=>i.value);
+$('#names').innerHTML=[...Array(n)].map((_,i)=>`<div class="nm">${bact(i)}<div style="flex:1"><small>Jugador ${i+1} · ${C[i].n} (${C[i].t})</small><input maxlength="14" placeholder="Jugador ${i+1}" value="${(old[i]||'').replace(/"/g,'')}"></div></div>`).join('')}
+document.querySelectorAll('.cnt').forEach(b=>b.onclick=()=>setCount(+b.dataset.n));setCount(2);
+function draw(){if(!deck.length)deck=[...Array(QS.length).keys()].sort(()=>Math.random()-.5);const q=QS[deck.pop()];const o=[q.c,...q.w].map((t,k)=>({t,ok:!k})).sort(()=>Math.random()-.5);return{...q,o}}
+function startGame(){const ins=[...document.querySelectorAll('.nm input')];P=ins.map((x,i)=>({name:x.value.trim()||'Jugador '+(i+1),pos:0}));cur=0;deck=[];buildBoard();
+$('#toks').innerHTML=P.map((_,i)=>`<div class="tok" id="t${i}">${bact(i)}</div>`).join('');P.forEach((_,i)=>setTok(i));
+show('game');nextTurn()}
+function setTok(i){const[x,y]=pt(P[i].pos),dx=[-2.2,2.2,-2.2,2.2][i],dy=[-2.2,-2.2,2.2,2.2][i],e=$('#t'+i);e.style.left=x+dx+'%';e.style.top=y+dy+'%'}
+function renderScore(){$('#score').innerHTML=P.map((p,i)=>`<div class="sc${i==cur?' act':''}">${bact(i)}<span><b>${p.name}</b><br>posición ${p.pos||'—'}</span></div>`).join('');P.forEach((_,i)=>$('#t'+i).classList.toggle('act',i==cur))}
+function nextTurn(){phase='q';$('#turn').textContent='🏆 TURNO DE: '+P[cur].name;renderScore();
+const f=$('#fact');if(Math.random()<.4){f.hidden=false;f.innerHTML='🧠 <b>DATO BIOQUÍMICO:</b> '+FACTS[Math.random()*FACTS.length|0]}else f.hidden=true;
+Q=draw();blocked.clear();sel=cur;$('#next').hidden=true;$('#roll').disabled=true;$('#dice').textContent='🎲';$('#msg').innerHTML='⚡ ¡Cualquier jugador puede responder! Elige quién responde.';
+$('#qt').textContent='❓ '+Q.q;$('#opts').innerHTML=Q.o.map((o,k)=>`<button class="op" data-k="${k}"><b>${'ABCD'[k]})</b> ${o.t}</button>`).join('');
+document.querySelectorAll('.op').forEach(b=>b.onclick=()=>answer(+b.dataset.k));renderWho();
+clearInterval(timer);tl=15;tick();timer=setInterval(()=>{tl-=.1;tick();if(tl<=0){clearInterval(timer);timeUp()}},100)}
+function tick(){const t=Math.max(tl,0);$('#bar').style.width=t/15*100+'%';$('#tt').textContent='⏱️ '+Math.ceil(t)+' s'}
+function renderWho(){$('#who').innerHTML='<b>¿Quién responde?</b> '+P.map((p,i)=>`<button class="ch${i==sel?' s':''}" ${blocked.has(i)||phase!='q'?'disabled':''} onclick="sel=${i};renderWho()">${p.name}</button>`).join('')}
+function lock(){document.querySelectorAll('.op').forEach(b=>b.disabled=true);renderWho()}
+async function answer(k){if(phase!='q'||blocked.has(sel))return;const b=document.querySelectorAll('.op')[k],p=sel;
+if(Q.o[k].ok){clearInterval(timer);phase='roll';roller=p;b.classList.add('ok');lock();
+const own=p==cur;$('#msg').innerHTML=`💡 ${Q.e}<br><b>${own?'Ahora puedes lanzar el dado.':'¡'+P[p].name+' puede lanzar el dado!'}</b>`;$('#roll').disabled=false;
+toast(own?'✅ ¡RESPUESTA CORRECTA!':`🎉 ¡${P[p].name.toUpperCase()} RESPONDIÓ CORRECTAMENTE!`,own?'Ahora puedes lanzar el dado.':'¡Puede lanzar el dado!','good',1500)}
+else{b.classList.add('no');b.disabled=true;blocked.add(p);
+if(blocked.size>=P.length){endQ('❌ RESPUESTA INCORRECTA. Nadie respondió correctamente. La pregunta termina.');toast('❌ RESPUESTA INCORRECTA','Nadie respondió correctamente. La pregunta termina.','bad');return}
+$('#msg').innerHTML=`❌ <b>RESPUESTA INCORRECTA</b> — ${P[p].name} queda bloqueado.${p==cur?' Pierdes la oportunidad de lanzar el dado, pero los demás aún pueden responder.':''}`;
+toast('❌ RESPUESTA INCORRECTA',P[p].name+' queda bloqueado para esta pregunta.','bad',1200);
+sel=!blocked.has(cur)?cur:[...P.keys()].find(i=>!blocked.has(i));renderWho()}}
+function timeUp(){endQ('⏰ <b>¡SE ACABÓ EL TIEMPO!</b>');toast('⏰ ¡SE ACABÓ EL TIEMPO!','La pregunta termina.','bad')}
+function endQ(m){clearInterval(timer);phase='fb';lock();const L='ABCD'[Q.o.findIndex(o=>o.ok)];
+document.querySelectorAll('.op').forEach(b=>{if(Q.o[+b.dataset.k].ok)b.classList.add('ok')});
+$('#msg').innerHTML=`${m}<br>✔️ <b>Respuesta correcta: ${L}</b><br>📖 <b>Explicación:</b> ${Q.e}<br>Se pierde la oportunidad de lanzar el dado.`;$('#next').hidden=false}
+function cont(){if(phase!='fb')return;cur=(cur+1)%P.length;nextTurn()}
+async function toast(t,x,c,ms=1700){const e=$('#toast');e.className=c+' show';e.innerHTML=`<h3>${t}</h3><div>${x}</div>`;await sleep(ms);e.classList.remove('show')}
+async function roll(){if(phase!='roll')return;phase='move';$('#roll').disabled=true;const d=$('#dice');d.classList.add('sp');
+for(let k=0;k<10;k++){d.textContent='⚀⚁⚂⚃⚄⚅'[Math.random()*6|0];await sleep(80)}
+d.classList.remove('sp');const r=1+Math.random()*6|0;d.textContent='⚀⚁⚂⚃⚄⚅'[r-1];const p=P[roller];
+$('#msg').innerHTML=`🎲 <b>Sacaste ${r}</b> — ${p.name} avanza ${r} casilla${r>1?'s':''}.`;await sleep(500);
+if(p.pos+r>100){await toast('🎲 Sacaste '+r,'Necesitas un número menor para llegar a la meta.','info',1800)}
+else{for(let k=0;k<r;k++){p.pos++;setTok(roller);renderScore();await sleep(300)}
+await sleep(200);const t=$('#t'+roller);
+if(LD[p.pos]){await toast('🧬 ¡EXCELENTE MIGRACIÓN!','Tu bacteria encontró una ruta favorable y avanza.','good',1500);t.classList.add('slow');p.pos=LD[p.pos];setTok(roller);await sleep(1200);t.classList.remove('slow')}
+else if(SN[p.pos]){await toast('⚠️ ¡ERROR EXPERIMENTAL!','Tu bacteria perdió estabilidad y retrocede.','bad',1500);t.classList.add('slow');p.pos=SN[p.pos];setTok(roller);await sleep(1200);t.classList.remove('slow')}
+renderScore();
+if(p.pos==100){win(roller);return}}
+await sleep(500);cur=(cur+1)%P.length;nextTurn()}
+function win(i){phase='over';clearInterval(timer);$('#vsv').innerHTML=bact(i);$('#vn').textContent=`¡Felicidades, ${P[i].name}! Eres un buen bioquímico.`;$('#vic').hidden=false;
+const c=$('#cv'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const E=['🧬','🦠','🧪','⚡','🔬'];
+const ps=[...Array(150)].map(()=>({x:Math.random()*c.width,y:-Math.random()*c.height,v:2+Math.random()*4,s:6+Math.random()*7,h:Math.random()*360,e:Math.random()<.2?E[Math.random()*5|0]:null}));cf=true;
+(function f(){if(!cf)return;x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.y+=p.v;p.x+=Math.sin(p.y/30)*1.5;if(p.y>c.height)p.y=-10;if(p.e){x.font='24px serif';x.fillText(p.e,p.x,p.y)}else{x.fillStyle=`hsl(${p.h},90%,60%)`;x.fillRect(p.x,p.y,p.s,p.s*.6)}});requestAnimationFrame(f)})()}
+function again(){cf=false;clearInterval(timer);phase='';$('#vic').hidden=true;$('#toast').classList.remove('show');show('setup')}
+</script></body></html>
